@@ -1,0 +1,35 @@
+<html>
+<head>
+	<link href="/stylesheets/blog.css" rel="stylesheet" type="text/css">
+	<title>Razvan's Blog</title>
+</head>
+<body>
+	<div>
+		<h2>Razvan's Blog - {{subject}}</h2>
+	</div>
+
+	<hr>
+	<br/>
+
+	<div class="login-area">
+		<a class="login-link" href="/blog">All posts</a>
+	</div>
+
+	<div class="post">
+		<div class="post-heading">
+			<div class="post-title">
+				{{subject}}
+			</div>
+			<div class="post-date">
+				{{date}}
+			</div>
+		</div>
+		<div class="post-content">
+			{{content}}
+		</div>
+	</div>
+	<br/>
+	<br/>
+	
+</body>
+</html>

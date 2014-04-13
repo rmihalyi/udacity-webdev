@@ -1,0 +1,36 @@
+<html>
+<head>
+	<link href="/stylesheets/blog.css" rel="stylesheet" type="text/css">
+	<title>Razvan's Blog - New post</title>
+</head>
+<body>
+	<div>
+		<h2>Razvan's Blog</h2>
+	</div>
+
+	<div class="login-area">
+		<a class="login-link" href="/blog">All posts</a>
+	</div>
+
+	<br/>
+	<br/>
+	<form method="post">
+		<label>
+			<div>subject</div>
+			<input type="text" name="subject" value="{{subject}}">			
+		</label>
+
+		<br/>
+
+		<label>
+			<div>content</div>
+			<textarea name="content">{{content}}</textarea>
+		</label>
+		<br/>
+		<div class="error">{{error}}</div>
+
+		<input type="submit" class="mysubmit">
+	</form>
+	
+</body>
+</html>
