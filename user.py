@@ -70,6 +70,35 @@ class SignupHandler(common.Handler):
             self.response.headers.add_header('Set-Cookie', set_cookie_val)
             self.redirect("/unit3/welcome")
 
+### Handles the user login
+class LoginHandler(common.Handler):
+    def render_login(self, username="", error=""):
+        self.render("login.html", username=username, error=error)
+
+    def get(self):
+        self.render_login("", "")
+
+    def post(self):
+        username = self.request.get("username")
+        password = self.request.get("password")
+        error = False
+        if username and password:
+            user = db.GqlQuery("SELECT * FROM User WHERE username=:1 limit 1", username).get()
+            if user:
+                if valid_pw(username, password, user.password):
+                    set_cookie_val = "user_id=%s; Path=/" % make_secure_val(str(user.key().id()))
+                    self.response.headers.add_header('Set-Cookie', set_cookie_val)
+                    self.redirect("/unit3/welcome")
+                else:
+                    error = True
+            else:
+                error = True
+        else:
+            error = True
+
+        if error:
+            self.render_login("", "Invalid login")
+
 ### Handles the welcome screen
 class WelcomeHandler(common.Handler):
     def get(self):
