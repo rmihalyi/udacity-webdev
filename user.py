@@ -99,6 +99,13 @@ class LoginHandler(common.Handler):
         if error:
             self.render_login("", "Invalid login")
 
+### Handles the user logout
+class LogoutHandler(common.Handler):
+    def get(self):
+        # delete cookie
+        self.response.headers.add_header('Set-Cookie', "user_id=; Path=/")
+        self.redirect("/signup")
+
 ### Handles the welcome screen
 class WelcomeHandler(common.Handler):
     def get(self):
