@@ -1,4 +1,4 @@
-import common, blog, user, webapp2
+import common, blog, user, jsonHandler, webapp2
 
 class MainPage(common.Handler):
     def get(self):

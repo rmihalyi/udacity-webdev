@@ -1,4 +1,9 @@
-import os, re, hmac, random, string, webapp2, logging, jinja2, hashlib, json
+import os, re, hmac, random, string, webapp2, logging, jinja2, hashlib
+try:
+    import json                # Python 2.7.
+except ImportError:
+    import simplejson as json  # Python 2.5.
+    
 from google.appengine.ext import db
 
 ### template helpers
@@ -32,6 +37,6 @@ class Handler(webapp2.RequestHandler):
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
-    def render_json(self, obj):
+    def render_json(self, obj, encode):
         self.response.headers['Content-Type'] = "application/json"
-        self.response.out.write(json.dumps(obj))
+        self.response.out.write(json.dumps(obj, default = encode))
