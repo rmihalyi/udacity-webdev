@@ -1,4 +1,4 @@
-import os, re, hmac, random, string, webapp2, logging, jinja2, hashlib
+import os, re, hmac, random, string, webapp2, logging, jinja2, hashlib, json
 from google.appengine.ext import db
 
 ### template helpers
@@ -31,3 +31,7 @@ class Handler(webapp2.RequestHandler):
 
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
+
+    def render_json(self, obj):
+        self.response.headers['Content-Type'] = "application/json"
+        self.response.out.write(json.dumps(obj))

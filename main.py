@@ -13,4 +13,5 @@ app = webapp2.WSGIApplication([
   ('/login', user.LoginHandler),
   ('/logout', user.LogoutHandler),
   ('/unit3/welcome', user.WelcomeHandler)
+  ('/blog/.json', json.JsonBlogHandler)
   ], debug = True)
