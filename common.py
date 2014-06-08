@@ -1,15 +1,33 @@
-import os, re, hmac, random, string, webapp2, logging, jinja2, hashlib
-try:
-    import json                # Python 2.7.
-except ImportError:
-    import simplejson as json  # Python 2.5.
-    
+import os, re, hmac, random, string, webapp2, logging, jinja2, hashlib, json, logging
 from google.appengine.ext import db
 
 ### template helpers
-
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=True)
+
+### Main handler
+class Handler(webapp2.RequestHandler):
+    def write(self, *a, **kw):
+        self.response.out.write(*a, **kw)
+
+    def render_str(self, template, **params):
+        t = jinja_env.get_template(template)
+        return t.render(params)
+
+    def render(self, template, **kw):
+        self.write(self.render_str(template, **kw))
+
+    def render_json(self, obj):
+        self.response.headers['Content-Type'] = 'application/json; charset=UTF-8'
+        self.write(json.dumps(obj))
+
+    def initialize(self, *a, **kw):
+        webapp2.RequestHandler.initialize(self, *a, **kw)
+        if self.request.url.endswith('.json'):
+            self.format = 'json'
+        else:
+            self.format = 'html'
+
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):
@@ -25,18 +43,20 @@ def valid_email(email):
 
 SECRET = ''.join(random.sample(string.ascii_letters + string.digits, 10))
 
-### Main handler
-class Handler(webapp2.RequestHandler):
-    def write(self, *a, **kw):
-        self.response.out.write(*a, **kw)
+def encode_blog(obj):
+    if isinstance(obj, Blog):
+        return obj.__dict__
+    return obj
 
-    def render_str(self, template, **params):
-        t = jinja_env.get_template(template)
-        return t.render(params)
+### Blog table
+class Blog(db.Model):
+    subject = db.StringProperty(required = True)
+    content = db.TextProperty(required = True)
+    created = db.DateTimeProperty(auto_now_add = True)
 
-    def render(self, template, **kw):
-        self.write(self.render_str(template, **kw))
-
-    def render_json(self, obj, encode):
-        self.response.headers['Content-Type'] = "application/json"
-        self.response.out.write(json.dumps(obj, default = encode))
+    def as_dict(self):
+        time_format = '%c'
+        d = {'subject': self.subject,
+             'content': self.content,
+             'created': self.created.strftime(time_format)}
+        return d

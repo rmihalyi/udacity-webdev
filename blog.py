@@ -1,16 +1,16 @@
 import common
 from google.appengine.ext import db
 
-### Blog table
-class Blog(db.Model):
-    subject = db.StringProperty(required = True)
-    content = db.TextProperty(required = True)
-    created = db.DateTimeProperty(auto_now_add = True)
-
 class PostHandler(common.Handler):
     def render_post(self, pid):
         post = Blog.get_by_id(int (pid))
-        self.render("post.html", subject=post.subject, content=post.content, date=post.created.date())
+        if not post:
+          self.error(404)
+          return
+        if self.format == 'html':
+          self.render("post.html", subject=post.subject, content=post.content, date=post.created.date())
+        else:
+          self.render_json(post.as_dict())
     
     def get(self, pid):
         self.render_post(pid)
@@ -19,7 +19,10 @@ class PostHandler(common.Handler):
 class BlogHandler(common.Handler):
   def render_front(self):
       posts = db.GqlQuery("SELECT * FROM Blog ORDER BY created DESC")
-      self.render("blog.html", posts=posts)
+      if self.format == 'html':
+        self.render("blog.html", posts=posts)
+      else:
+        return self.render_json([p.as_dict() for p in posts])
   
   def get(self):
       self.render_front()
@@ -33,14 +36,13 @@ class NewPostHandler(common.Handler):
       self.render_newpost()
 
   def post(self):
-    subject = self.request.get("subject")
-    content = self.request.get("content")
-    error = ""
+      subject = self.request.get("subject")
+      content = self.request.get("content")
+      error = ""
 
     if subject and content:
         b = Blog(subject = subject, content = content)
         b.put()
-        #self.render_newpost("", "", b.key().id())
         self.redirect("/blog/" + str(b.key().id()))
     else:
         error = "Both the subject and content forms should be filled"

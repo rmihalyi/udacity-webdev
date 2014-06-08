@@ -6,12 +6,12 @@ class MainPage(common.Handler):
 
 app = webapp2.WSGIApplication([
   ('/', MainPage),
-  ('/blog', blog.BlogHandler),
+  ('/blog/?(?:.json)?', blog.BlogHandler),
+  ('/blog/(\d+)(?:.json)?', blog.PostHandler),
   ('/newpost', blog.NewPostHandler),
-  ('/blog/(\d+)', blog.PostHandler),
   ('/signup', user.SignupHandler),
   ('/login', user.LoginHandler),
   ('/logout', user.LogoutHandler),
   ('/unit3/welcome', user.WelcomeHandler)
-  ('/blog/.json', json.JsonBlogHandler)
+  #('/blog/.json', jsonHandler.JsonBlogHandler)
   ], debug = True)
